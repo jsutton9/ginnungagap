@@ -14,7 +14,6 @@ type Block struct {
 	Chemicals [8]float64
 	Pressure float64
 	NextPressure float64
-	//FlowBias [2]float64 //TODO: necessary?
 	FlowRate [2]float64
 	MineralCapacity float64
 }
@@ -37,6 +36,7 @@ type TerrainField struct {
 }
 
 type FluidField struct {
+	FlowBiasCurrent [][]float64
 	FlowBiasConstant [][]float64
 	FlowBiasAmplitude [][]float64
 	FlowBiasPhase [][]float64
