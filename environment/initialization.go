@@ -3,10 +3,11 @@ package environment
 import (
 	"math"
 	"math/rand"
+	"sort"
 	"time"
 )
 
-func diamondSquare(minSize int) *[][]float64 {
+func diamondSquare(minSize int) [][]float64 {
 	var exp uint = 0
 	size := 1
 	for size < minSize {
@@ -85,12 +86,12 @@ func diamondSquare(minSize int) *[][]float64 {
 		randRange /= math.Sqrt2
 	}
 
-	return &grid
+	return grid
 }
 
-func resizeGrid(gridOld *[][]float64, hNew int, wNew int) *[][]float64 {
-	hOld := len(*gridOld)
-	wOld := len((*gridOld)[0])
+func resizeGrid(gridOld [][]float64, hNew int, wNew int) [][]float64 {
+	hOld := len(gridOld)
+	wOld := len(gridOld[0])
 	iScale := float64(hOld-1) / float64(hNew-1)
 	jScale := float64(wOld-1) / float64(wNew-1)
 
@@ -112,12 +113,49 @@ func resizeGrid(gridOld *[][]float64, hNew int, wNew int) *[][]float64 {
 			weightLeft := float64(jRight) - jOld
 			weightRight := 1.0 - weightLeft
 
-			gridNew[iNew][jNew] = weightTop*weightLeft*(*gridOld)[iTop][jLeft] +
-				weightTop*weightRight*(*gridOld)[iTop][jRight] +
-				weightBottom*weightLeft*(*gridOld)[iBottom][jLeft] +
-				weightBottom*weightRight*(*gridOld)[iBottom][jRight]
+			gridNew[iNew][jNew] = weightTop*weightLeft*gridOld[iTop][jLeft] +
+				weightTop*weightRight*gridOld[iTop][jRight] +
+				weightBottom*weightLeft*gridOld[iBottom][jLeft] +
+				weightBottom*weightRight*gridOld[iBottom][jRight]
 		}
 	}
 
-	return &gridNew
+	return gridNew
+}
+
+// for sorting grid positions by value
+type cell struct {
+	I int
+	J int
+	X float64
+}
+type cellSlice []cell
+func (cellSlice) Less(i, j int) bool {
+	return cellSlice[i].X < cellSlice[j].X
+}
+
+// "convert" should convert from [0, 1) uniform distribution to target distribution
+func applyGridDistribution(grid [][]float64, convert func(float64) float64) *[][]float64 {
+	h := len(grid)
+	w := len(grid[0])
+
+	// get list of positions sorted by value
+	cells := make(cellSlice, h*w)
+	for i:=0; i<h; i++ {
+		for j:=0; j<w; j++ {
+			cells[i*w+j] = cell{
+				I: i,
+				J: j,
+				X: grid[i][j],
+			}
+		}
+	}
+	sort.Sort(cells)
+
+	// convert grid to "convert" distribution
+	delta := 1.0/w*h
+	for (k:=0; k<w*h; k++) {
+		c := cells[k]
+		grid[c.I][c.J] = convert(k*delta)
+	}
 }
