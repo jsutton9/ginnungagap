@@ -130,12 +130,18 @@ type cell struct {
 	X float64
 }
 type cellSlice []cell
-func (cellSlice) Less(i, j int) bool {
-	return cellSlice[i].X < cellSlice[j].X
+func (cs cellSlice) Less(i, j int) bool {
+	return cs[i].X < cs[j].X
+}
+func (cs cellSlice) Len() int {
+	return len(cs)
+}
+func (cs cellSlice) Swap(i, j int) {
+	cs[i], cs[j] = cs[j], cs[i]
 }
 
 // "convert" should convert from [0, 1) uniform distribution to target distribution
-func applyGridDistribution(grid [][]float64, convert func(float64) float64) *[][]float64 {
+func applyGridDistribution(grid [][]float64, convert func(float64) float64) [][]float64 {
 	h := len(grid)
 	w := len(grid[0])
 
@@ -153,9 +159,39 @@ func applyGridDistribution(grid [][]float64, convert func(float64) float64) *[][
 	sort.Sort(cells)
 
 	// convert grid to "convert" distribution
-	delta := 1.0/w*h
-	for (k:=0; k<w*h; k++) {
+	delta := 1.0/float64(w*h)
+	for k:=0; k<w*h; k++ {
 		c := cells[k]
-		grid[c.I][c.J] = convert(k*delta)
+		grid[c.I][c.J] = convert(float64(k)*delta)
+	}
+
+	return grid
+}
+
+// TODO: use inverse-CDF instead of sampling
+func getNormalConverter(mean float64, std float64, precision int) func(float64) float64 {
+	samples := make([]float64, precision)
+	for i, _ := range samples {
+		samples[i] = rand.NormFloat64()*std + mean
+	}
+	sort.Float64s(samples)
+
+	return func(u float64) float64 {
+		pos := u*float64(precision)
+		i := int(pos)
+		floor := samples[i]
+		ceil := floor
+		if (i+1 < precision) {
+			ceil = samples[i+1]
+		}
+		weight := 1 - pos + float64(i)
+
+		return floor*weight + ceil*(1.0-weight)
+	}
+}
+
+func getExpConverter(lambda float64) func(float64) float64 {
+	return func(u float64) float64 {
+		return -math.Log(1 - u)/lambda
 	}
 }
