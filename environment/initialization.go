@@ -195,3 +195,31 @@ func getExpConverter(lambda float64) func(float64) float64 {
 		return -math.Log(1 - u)/lambda
 	}
 }
+
+// A two-vector with two independently randomly generated coordinates will be biased toward higher
+// magnitudes along the diagonal over orthogonal directions.
+func removeDiagonalBias(grid [][][2]float64) [][][2]float64 {
+	h := len(grid)
+	w := len(grid[0])
+
+	for i:=0; i<h; i++ {
+		for j:=0; j<w; j++ {
+			x := grid[i][j][0]
+			y := grid[i][j][1]
+			if x == 0 || y == 0 {
+				continue
+			}
+			var ratio float64;
+			if x < y {
+				ratio = x/y
+			} else {
+				ratio = y/x
+			}
+			bias := math.Sqrt(1 + ratio*ratio)
+			grid[i][j][0] /= bias
+			grid[i][j][1] /= bias
+		}
+	}
+
+	return grid
+}
