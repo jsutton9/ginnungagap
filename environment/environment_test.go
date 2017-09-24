@@ -84,3 +84,62 @@ func TestRemoveDiagonalBias(t *testing.T) {
 		}
 	}
 }
+
+func TestGetMagnitudes(t *testing.T) {
+	vectors := [][][2]float64{
+		{{-3.0, 4.0}, {-1.5, -2.0}},
+		{{1.0, 0.0}, {0.0, 1.0}},
+	}
+	expected := [][]float64{
+		{5.0, 2.5},
+		{1.0, 1.0},
+	}
+
+	magnitudes := getMagnitudes(vectors)
+
+	for i, _ := range expected {
+		for j, _ := range expected[i] {
+			if math.Abs((magnitudes[i][j]-expected[i][j])/expected[i][j]) > 0.01 {
+				fmt.Println("magnitude off: ")
+				fmt.Printf("  vector: <%f, %f>\n",
+					vectors[i][j][0], vectors[i][j][1])
+				fmt.Printf("  expected magnitude: %f\n", expected[i][j])
+				fmt.Printf("  returned magnitude: %f\n", magnitudes[i][j])
+				t.Fail()
+			}
+		}
+	}
+}
+
+func TestSetMagnitudes(t *testing.T) {
+	vectors := [][][2]float64{
+		{{-3.0, 4.0}, {-1.5, -2.0}},
+		{{1.0, 0.0}, {0.0, 1.0}},
+	}
+	magnitudes := [][]float64{
+		{0.0, -5.0},
+		{5.0, -0.5},
+	}
+	expected := [][][2]float64{
+		{{0.0, 0.0}, {3.0, 4.0}},
+		{{5.0, 0.0}, {0.0, -0.5}},
+	}
+
+	scaled := setMagnitudes(vectors, magnitudes)
+
+	for i, _ := range expected {
+		for j, _ := range expected[i] {
+			delta_x := scaled[i][j][0] - expected[i][j][0]
+			delta_y := scaled[i][j][1] - expected[i][j][1]
+			if math.Abs(delta_x) > 0.01 || math.Abs(delta_y) > 0.01 {
+				fmt.Println("incorrectly scaled: ")
+				fmt.Printf("  expected: <%f, %f>\n",
+					expected[i][j][0], expected[i][j][1])
+				fmt.Printf("  magnitude: %f\n", magnitudes[i][j])
+				fmt.Printf("  scaled: <%f, %f>\n",
+					scaled[i][j][0], scaled[i][j][1])
+				t.Fail()
+			}
+		}
+	}
+}

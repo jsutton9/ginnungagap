@@ -223,3 +223,37 @@ func removeDiagonalBias(grid [][][2]float64) [][][2]float64 {
 
 	return grid
 }
+
+// Given a grid of 2-vectors, return a grid of their magnitudes.
+func getMagnitudes(vectors [][][2]float64) [][]float64 {
+	magnitudes := make([][]float64, len(vectors))
+	for i, _ := range vectors {
+		magnitudes[i] = make([]float64, len(vectors[i]))
+		for j, _ := range vectors[i] {
+			x := vectors[i][j][0]
+			y := vectors[i][j][1]
+			magnitudes[i][j] = math.Sqrt(x*x + y*y)
+		}
+	}
+
+	return magnitudes
+}
+
+// Given a grid of 2-vectors and a grid of magnitudes, scale the vectors to have those magnitudes.
+func setMagnitudes(vectors [][][2]float64, magnitudes [][]float64) [][][2]float64 {
+	for i, _ := range vectors {
+		for j, _ := range vectors[i] {
+			x := vectors[i][j][0]
+			y := vectors[i][j][1]
+			r := magnitudes[i][j]
+			if x == 0.0 && y == 0.0 {
+				continue
+			}
+			scale_factor := r/math.Sqrt(x*x+y*y)
+			vectors[i][j][0] = scale_factor*x
+			vectors[i][j][1] = scale_factor*y
+		}
+	}
+
+	return vectors
+}
