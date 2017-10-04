@@ -36,12 +36,14 @@ type TerrainField struct {
 }
 
 type FluidField struct {
-	FlowBiasConstant [][]float64
-	FlowBiasAmplitude [][]float64
-	FlowBiasPhase [][]float64
+	FlowBiasCurrent [][][2]float64
+	FlowBiasConstant [][][2]float64
+	FlowBiasAmplitude [][][2]float64
+	FlowBiasPhase [][][2]float64
 }
 
 type EnergyField struct {
+	PowerCurrent [][]float64
 	PowerConstant [][]float64
 	PowerAmplitude [][]float64
 	PowerPhase [][]float64

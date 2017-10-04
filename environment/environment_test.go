@@ -18,6 +18,16 @@ func printGrid(grid [][]float64) {
 	fmt.Println("")
 }
 
+func copyGrid(grid [][]float64) [][]float64 {
+	gridCopy := make([][]float64, len(grid))
+	for i, _ := range grid {
+		gridCopy[i] = make([]float64, len(grid[i]))
+		copy(gridCopy[i], grid[i])
+	}
+
+	return gridCopy
+}
+
 // This fails intentionally. The output is meant to be visually inspected.
 func TestDiamondSquare(t *testing.T) {
 	gridOld := diamondSquare(13)
@@ -29,14 +39,19 @@ func TestDiamondSquare(t *testing.T) {
 	printGrid(gridResized)
 
 	convertToNormal := getNormalConverter(50.0, 10.0, 1000)
-	gridNormal := applyGridDistribution(gridResized, convertToNormal)
+	gridNormal := applyGridDistribution(copyGrid(gridResized), convertToNormal)
 	fmt.Println("gridNormal: ")
 	printGrid(gridNormal)
 
 	convertToExp := getExpConverter(0.5)
-	gridExp := applyGridDistribution(gridResized, convertToExp)
+	gridExp := applyGridDistribution(copyGrid(gridResized), convertToExp)
 	fmt.Println("gridExp: ")
 	printGrid(gridExp)
+
+	convertToLogNorm := getLogNormalConverter(1.0, 0.5, 1000)
+	gridLogNorm := applyGridDistribution(copyGrid(gridResized), convertToLogNorm)
+	fmt.Println("gridLogNorm: ")
+	printGrid(gridLogNorm)
 
 	t.Fail()
 }

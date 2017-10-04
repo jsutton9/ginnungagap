@@ -123,6 +123,32 @@ func resizeGrid(gridOld [][]float64, hNew int, wNew int) [][]float64 {
 	return gridNew
 }
 
+func randomSquare(size int) [][]float64 {
+	grid := diamondSquare(size)
+	return resizeGrid(grid, size, size)
+}
+
+func zeroSquare(size int) [][]float64 {
+	grid := make([][]float64, size)
+	for i:=0; i<size; i++ {
+		grid[i] = make([]float64, size)
+	}
+	return grid
+}
+
+func interleaveGrids(a [][]float64, b [][]float64) [][][2]float64 {
+	v := make([][][2]float64, len(a))
+	for i, _ := range a {
+		v[i] = make([][2]float64, len(a[0]))
+		for j, _ := range a[i] {
+			v[i][j][0] = a[i][j]
+			v[i][j][1] = b[i][j]
+		}
+	}
+
+	return v
+}
+
 // for sorting grid positions by value
 type cell struct {
 	I int
@@ -196,6 +222,17 @@ func getExpConverter(lambda float64) func(float64) float64 {
 	}
 }
 
+func getLogNormalConverter(mu float64, sigma float64, precision int) func(float64) float64 {
+	normalConverter := getNormalConverter(mu, sigma, precision)
+	return func(u float64) float64 {
+		return math.Exp(normalConverter(u))
+	}
+}
+
+func uniformConverter(u float64) float64 {
+	return u
+}
+
 // A two-vector with two independently randomly generated coordinates will be biased toward higher
 // magnitudes along the diagonal over orthogonal directions.
 func removeDiagonalBias(grid [][][2]float64) [][][2]float64 {
@@ -256,4 +293,24 @@ func setMagnitudes(vectors [][][2]float64, magnitudes [][]float64) [][][2]float6
 	}
 
 	return vectors
+}
+
+func randomVectorSquare(size int) float[][][2] {
+	a := randomSquare(size)
+	b := randomSquare(size)
+	v := interleaveGrids(a, b)
+	return removeDiagonalBias(v)
+}
+
+func zeroVectorSquare(size int) float[][][2] {
+	grid := make([][][2]float64, size)
+	for i:=0; i<size; i++ {
+		grid[i] = make([][2]float64, size)
+	}
+}
+
+func applyVectorMagnitudeDistribution(grid [][][2]float64, convert func(float64) float64)
+		[][][2]float64 {
+	magnitudes := applyGridDistribution(getMagnitudes(grid), convert)
+	return setMagnitudes(grid, magnitudes)
 }
