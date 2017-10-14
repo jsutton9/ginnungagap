@@ -158,3 +158,19 @@ func TestSetMagnitudes(t *testing.T) {
 		}
 	}
 }
+
+func TestGridPercentile(t *testing.T) {
+	values := make([]float64, 100)
+	for i, x := range rand.Perm(100) {
+		values[i] = float64(x)
+	}
+	grid := make([][]float64, 10)
+	for i, _ := range grid {
+		grid[i] = values[10*i:10*(i+1)]
+	}
+	split := gridPercentile(grid, 0.355)
+	if split < 34 || split > 35 {
+		fmt.Printf("expected 34 < split < 35, got %f\n", split)
+		t.Fail()
+	}
+}

@@ -3,23 +3,26 @@ package environment
 import (
 )
 
+const ROCK_PORTION = 0.3
+const BASE_HARDNESS = 100.0
+
 func makeTerrainField(size int) TerrainField {
 	logNormal := getLogNormalConverter(0.0, 0.5, 10000)
 	field := TerrainField{
 		SolidityCurrent: zeroSquare(size),
 		SolidityConstant: applyGridDistribution(randomSquare(size), logNormal),
 		SolidityAmplitude: applyGridDistribution(randomSquare(size), logNormal),
-		SolidityPhase: randomSquare(size),
+		SolidityPhase: applyGridDistribution(randomSquare(size), uniformConverter),
 
 		HardnessCurrent: zeroSquare(size),
 		HardnessConstant: applyGridDistribution(randomSquare(size), logNormal),
 		HardnessAmplitude: applyGridDistribution(randomSquare(size), logNormal),
-		HardnessPhase: randomSquare(size),
+		HardnessPhase: applyGridDistribution(randomSquare(size), uniformConverter),
 
-		MineralCapacityCurrent: zeroSquare(size),
-		MineralCapacityConstant: applyGridDistribution(randomSquare(size), logNormal),
-		MineralCapacityAmplitude: applyGridDistribution(randomSquare(size), logNormal),
-		MineralCapacityPhase: randomSquare(size),
+		ChemicalCapacityCurrent: zeroSquare(size),
+		ChemicalCapacityConstant: applyGridDistribution(randomSquare(size), logNormal),
+		ChemicalCapacityAmplitude: applyGridDistribution(randomSquare(size), logNormal),
+		ChemicalCapacityPhase: applyGridDistribution(randomSquare(size), uniformConverter),
 	}
 
 	return field
@@ -51,3 +54,10 @@ func makeEnergyField(size int) EnergyField {
 
 	return field
 }
+
+/*func makeBlocks(terrain TerrainField) [][]Block {
+	blocks := make([][]Block, len(terrain))
+	for i:=0; i<len(terrain); i++ {
+		blocks[i] = make([]Block, len(terrain[i]))
+	}
+}*/

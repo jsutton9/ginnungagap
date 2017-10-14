@@ -295,22 +295,73 @@ func setMagnitudes(vectors [][][2]float64, magnitudes [][]float64) [][][2]float6
 	return vectors
 }
 
-func randomVectorSquare(size int) float[][][2] {
+func randomVectorSquare(size int) [][][2]float64 {
 	a := randomSquare(size)
 	b := randomSquare(size)
 	v := interleaveGrids(a, b)
 	return removeDiagonalBias(v)
 }
 
-func zeroVectorSquare(size int) float[][][2] {
+func zeroVectorSquare(size int) [][][2]float64 {
 	grid := make([][][2]float64, size)
 	for i:=0; i<size; i++ {
 		grid[i] = make([][2]float64, size)
 	}
+	return grid
 }
 
-func applyVectorMagnitudeDistribution(grid [][][2]float64, convert func(float64) float64)
-		[][][2]float64 {
+func applyVectorMagnitudeDistribution(grid [][][2]float64, convert func(float64) float64) [][][2]float64 {
 	magnitudes := applyGridDistribution(getMagnitudes(grid), convert)
 	return setMagnitudes(grid, magnitudes)
+}
+
+func quickKthSplit(x []float64, k int) float64 {
+	n := len(x)
+
+	if k <= 0 {
+		return math.Inf(-1)
+	} else if k >= n {
+		return math.Inf(1)
+	}
+
+	pivot := x[rand.Intn(n)]
+	l := []float64{}
+	r := []float64{}
+	for _, x_i := range x {
+		if x_i <= pivot {
+			l = append(l, x_i)
+		} else {
+			r = append(r, x_i)
+		}
+	}
+
+	if len(l) == k {
+		l_max := math.Inf(-1)
+		r_min := math.Inf(1)
+		for _, l_i := range l {
+			if l_i > l_max {
+				l_max = l_i
+			}
+		}
+		for _, r_i := range l {
+			if r_i < r_min {
+				r_min = r_i
+			}
+		}
+		return (l_max + r_min)/2
+	} else if len(l) < k {
+		return quickKthSplit(l, k)
+	} else {
+		return quickKthSplit(r, k-len(l))
+	}
+}
+
+func gridPercentile(grid [][]float64, p float64) float64 {
+	x := make([]float64, len(grid)*len(grid[0]))
+	for i, r := range grid {
+		for j, c := range r {
+			x[i*len(r)+j] = c
+		}
+	}
+	return quickKthSplit(x, int(p*float64(len(x))))
 }

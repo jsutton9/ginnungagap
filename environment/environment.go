@@ -1,21 +1,19 @@
 package environment
 
-type Space struct {
+type World struct {
 	Size int
 	BreakdownRate float64
 	TerrainField TerrainField
 	FluidField FluidField
+	EnergyField EnergyField
 	Blocks [][]Block
 	Season float64
 }
 
 type Block struct {
-	Liquid bool
+	Solid bool
 	Chemicals [8]float64
-	Pressure float64
-	NextPressure float64
-	FlowRate [2]float64
-	MineralCapacity float64
+	ChemicalCapacity float64
 }
 
 type TerrainField struct {
@@ -29,10 +27,10 @@ type TerrainField struct {
 	HardnessAmplitude [][]float64
 	HardnessPhase [][]float64
 
-	MineralCapacityCurrent [][]float64
-	MineralCapacityConstant [][]float64
-	MineralCapacityAmplitude [][]float64
-	MineralCapacityPhase [][]float64
+	ChemicalCapacityCurrent [][]float64
+	ChemicalCapacityConstant [][]float64
+	ChemicalCapacityAmplitude [][]float64
+	ChemicalCapacityPhase [][]float64
 }
 
 type FluidField struct {
@@ -56,4 +54,7 @@ type Rock struct {
 
 type Water struct {
 	Block
+	Pressure float64
+	NextPressure float64
+	FlowRate [2]float64
 }
