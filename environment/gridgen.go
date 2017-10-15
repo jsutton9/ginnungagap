@@ -343,13 +343,13 @@ func quickKthSplit(x []float64, k int) float64 {
 				l_max = l_i
 			}
 		}
-		for _, r_i := range l {
+		for _, r_i := range r {
 			if r_i < r_min {
 				r_min = r_i
 			}
 		}
 		return (l_max + r_min)/2
-	} else if len(l) < k {
+	} else if len(l) > k {
 		return quickKthSplit(l, k)
 	} else {
 		return quickKthSplit(r, k-len(l))

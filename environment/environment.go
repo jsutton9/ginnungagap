@@ -10,10 +10,22 @@ type World struct {
 	Season float64
 }
 
+type water struct {
+	Pressure float64
+	NextPressure float64
+	FlowBias [2]float64
+}
+
+type rock struct {
+	Health float64
+}
+
 type Block struct {
 	Solid bool
 	Chemicals [8]float64
 	ChemicalCapacity float64
+	Water water
+	Rock rock
 }
 
 type TerrainField struct {
@@ -48,13 +60,7 @@ type EnergyField struct {
 }
 
 type Rock struct {
-	Block
-	Health float64
 }
 
 type Water struct {
-	Block
-	Pressure float64
-	NextPressure float64
-	FlowRate [2]float64
 }

@@ -4,7 +4,8 @@ import (
 )
 
 const ROCK_PORTION = 0.3
-const BASE_HARDNESS = 100.0
+const BASE_HEALTH = 100.0
+const BASE_CHEMICAL_CAPACITY = 100.0
 
 func makeTerrainField(size int) TerrainField {
 	logNormal := getLogNormalConverter(0.0, 0.5, 10000)
@@ -55,9 +56,33 @@ func makeEnergyField(size int) EnergyField {
 	return field
 }
 
-/*func makeBlocks(terrain TerrainField) [][]Block {
-	blocks := make([][]Block, len(terrain))
-	for i:=0; i<len(terrain); i++ {
-		blocks[i] = make([]Block, len(terrain[i]))
+func makeBlocks(size int, terrain TerrainField) [][]Block {
+	solidThreshold := gridPercentile(terrain.SolidityConstant, 1.0-ROCK_PORTION)
+	blocks := make([][]Block, size)
+	for i:=0; i<size; i++ {
+		blocks[i] = make([]Block, size)
+		for j:=0; j<size; j++ {
+			if terrain.SolidityConstant[i][j] > solidThreshold {
+				blocks[i][j] = Block{
+					Solid: true,
+					ChemicalCapacity: BASE_CHEMICAL_CAPACITY*terrain.ChemicalCapacityConstant[i][j],
+					Rock: rock{
+						Health: BASE_HEALTH*terrain.HardnessConstant[i][j],
+					},
+				}
+			} else {
+				blocks[i][j] = Block{
+					Solid: false,
+					ChemicalCapacity: 1.0,
+					Water: water{
+						Pressure: 0.0,
+					},
+				}
+			}
+		}
 	}
-}*/
+
+	// TODO: add chemicals
+
+	return blocks
+}
