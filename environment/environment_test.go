@@ -30,7 +30,7 @@ func copyGrid(grid [][]float64) [][]float64 {
 
 // This fails intentionally. The output is meant to be visually inspected.
 func TestDiamondSquare(t *testing.T) {
-	gridOld := diamondSquare(13)
+	gridOld := DiamondSquare(13)
 	fmt.Println("gridOld: ")
 	printGrid(gridOld)
 

@@ -1,9 +1,32 @@
 <!DOCTYPE html>
 <html>
-
-<head></head>
+<head>
+  <link type="text/css" rel="stylesheet" href="/style.css" />
+</head>
 
 <body>
+
+<h1>{{.Name}}</h1>
+<div id="parent">
+  <div id="grid">
+    <img src="/{{.Name}}.png">
+  </div>
+  <div id="scale">
+    <table>
+      <tr>
+        <th>color</th>
+        <th>value</th>
+      </tr>
+      {{range .Scale}}
+        <tr>
+          <td style="background-color:#{{.ColorString}};"></td>
+          <td>{{.Value}}</td>
+        </tr>
+      {{end}}
+    </table>
+  </div>
+</div>
+
 </body>
 
 </html>

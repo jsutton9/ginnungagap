@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func diamondSquare(minSize int) [][]float64 {
+func DiamondSquare(minSize int) [][]float64 {
 	var exp uint = 0
 	size := 1
 	for size < minSize {
@@ -124,7 +124,7 @@ func resizeGrid(gridOld [][]float64, hNew int, wNew int) [][]float64 {
 }
 
 func randomSquare(size int) [][]float64 {
-	grid := diamondSquare(size)
+	grid := DiamondSquare(size)
 	return resizeGrid(grid, size, size)
 }
 
